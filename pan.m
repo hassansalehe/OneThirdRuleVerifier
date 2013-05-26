@@ -19,7 +19,7 @@
 		_m = 3; goto P999;
 
 		 /* PROC P */
-	case 3: /* STATE 7 - verify.pml:16 - [D_STEP] */
+	case 3: /* STATE 7 - verify.pml:22 - [D_STEP] */
 		IfNotBlocked
 
 		reached[0][7] = 1;
@@ -51,7 +51,7 @@ S_003_0: /* 2 */
 		/* else */;
 		goto S_005_0;
 S_004_2: /* 3 */
-		Uerror("blocking sel in d_step (nr.0, near line 18)");
+		Uerror("blocking sel in d_step (nr.0, near line 24)");
 S_005_0: /* 2 */
 		goto S_013_0;
 S_013_0: /* 1 */
@@ -61,7 +61,7 @@ S_013_0: /* 1 */
 #endif
 		_m = 3; goto P999;
 
-	case 4: /* STATE 14 - verify.pml:24 - [D_STEP] */
+	case 4: /* STATE 14 - verify.pml:30 - [D_STEP] */
 		IfNotBlocked
 
 		reached[0][14] = 1;
@@ -93,7 +93,7 @@ S_010_0: /* 2 */
 		/* else */;
 		goto S_012_0;
 S_011_2: /* 3 */
-		Uerror("blocking sel in d_step (nr.1, near line 26)");
+		Uerror("blocking sel in d_step (nr.1, near line 32)");
 S_012_0: /* 2 */
 		goto S_015_0;
 S_015_0: /* 1 */
@@ -103,7 +103,7 @@ S_015_0: /* 1 */
 #endif
 		_m = 3; goto P999;
 
-	case 5: /* STATE 18 - verify.pml:32 - [-end-] (0:0:0 - 1) */
+	case 5: /* STATE 18 - verify.pml:38 - [-end-] (0:0:0 - 1) */
 		IfNotBlocked
 		reached[0][18] = 1;
 		if (!delproc(1, II)) continue;
