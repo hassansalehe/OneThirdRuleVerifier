@@ -5,31 +5,108 @@
      (c) 2013
 */
 
-#define NPROCS 3
-#define K      2
-#define PID
+/* number of processes participating */
+#define NPROCS 4
 
-byte gate = ((K == 0) -> 0 : 1);
-int count = K;
+/* define rounds */
+#define ROUNDS 10
+byte round = 0;
+byte startRound = 0;
 
-active [NPROCS] proctype P () {	
-	do :: 
-		
-		d_step {
-			count--;
-			if
-			:: count > 0 -> gate++;
-			:: else
-			fi;
-		}
+byte waitSms = 0;
 
-		d_step {
-			count++;
-			if
-			:: count == 1 -> gate++;
-			:: else
-			fi;
-		}
-	od
+mtype = {FIVE, FOUR, THREE, TWO, ONE};
+
+mtype msg = ONE;
+
+/* message channels */
+mtype messages[NPROCS];
+
+/* heard-of set definition*/
+typedef HO {
+    mtype   recvMsgs[NPROCS];
+    //bit      ho_list[NPROCS];
+    byte
+   size
+};
+
+
+active [NPROCS] proctype P () {
+
+    // propose value
+    mtype Xp = _pid + 1;
+
+    // initiate the set
+     HO HO_Set;
+
+    // block till everyone comes here
+    startRound = startRound+1;
+    do
+         :: (startRound == NPROCS) -> break;
+         :: else skip;
+    od;
+     
+     //send message and update Heard-of set
+    atomic {
+           messages[_pid] = Xp;
+           //HO_Set.ho_list[_pid] = 1;
+           HO_Set.size =  0;
+     };
+
+     // wait untill everyone attempts to send his message
+     waitSms = waitSms + 1;
+    do
+         :: (waitSms == NPROCS) -> break;
+         :: else skip;
+    od;
+
+     // start receiving messages from other processes
+     atomic { 
+         byte process;
+         HO_Set.size =  0;
+         for (process : 0 .. (NPROCS-1) ) {
+
+            //non-deterministically receive message
+            if 
+                 :: true -> skip;
+                 :: true -> 
+                          atomic {
+                              HO_Set.recvMsgs[HO_Set.size] = messages[process];
+                              //HO_Set.ho_list[process] = 1;
+                              HO_Set.size =  HO_Set.size + 1;
+                          }
+            fi;
+       };
+
+          // check Heard-of set to decide on the proposed value
+          if
+               :: (HO_Set.size > ((2 * NPROCS) / 3)) 
+                       -> d_step {
+
+                            mtype hash[NPROCS];
+                            byte index;
+                            for(index: 0 .. (HO_Set.size-1)) {
+                                    hash[ (HO_Set.recvMsgs[index]  - 1)] = hash[ (HO_Set.recvMsgs[index]  - 1) ] + 1; 
+                           };
+                            byte max= 0;
+
+                            for(index: 0 .. (NPROCS-1)) {
+                                    if 
+                                        ::(hash[ index] > max) ->
+                                                        max = hash[index];
+                                                        Xp = index+1;
+                                         :: else -> skip;
+
+                                    fi
+                           };
+
+                            if
+                                 :: (max > ((2 * NPROCS) / 3) ) -> printf("Process %d decided\n", _pid) //DECIDE
+                                 :: else -> skip;
+                            fi
+                       
+                       };
+               :: true -> skip;
+         fi;
+       };  
 }
-
