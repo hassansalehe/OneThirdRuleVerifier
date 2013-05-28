@@ -106,7 +106,7 @@ active [NPROCS] proctype P () {
                             fi
                        
                        };
-               :: true -> skip;
+               :: else -> skip;
          fi;
        };  
 }
