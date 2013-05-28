@@ -35,6 +35,7 @@ active [NPROCS] proctype P () {
 
     // propose value
     mtype Xp = _pid + 1;
+    mtype decide=FIVE;
 
     // initiate the set
      HO HO_Set;
@@ -101,7 +102,7 @@ active [NPROCS] proctype P () {
                            };
 
                             if
-                                 :: (max > ((2 * NPROCS) / 3) ) -> printf("Process %d decided\n", _pid) //DECIDE
+                                 :: (max > ((2 * NPROCS) / 3) ) -> decide = Xp //DECIDE
                                  :: else -> skip;
                             fi
                        
