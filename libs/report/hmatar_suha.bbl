@@ -1,0 +1,109 @@
+\begin{thebibliography}{10}
+
+\bibitem{charron11}
+Bernadette Charron-Bost, Henri Debrat, and Stephan Merz.
+\newblock Formal verification of consensus algorithms tolerating malicious
+  faults.
+\newblock In {\em Stabilization, Safety, and Security of Distributed Systems},
+  pages 120--134. Springer, 2011.
+
+\bibitem{charron09}
+Bernadette Charron-Bost and Andr{\'e} Schiper.
+\newblock The heard-of model: computing in distributed systems with benign
+  faults.
+\newblock {\em Distributed Computing}, 22(1):49--71, 2009.
+
+\bibitem{debrat12}
+Henri Debrat, Stephan Merz, et~al.
+\newblock Verifying fault-tolerant distributed algorithms in the heard-of
+  model.
+\newblock 2012.
+
+\bibitem{dolev90}
+Danny Dolev, Ruediger Reischuk, and H~Raymond Strong.
+\newblock Early stopping in byzantine agreement.
+\newblock {\em Journal of the ACM (JACM)}, 37(4):720--741, 1990.
+
+\bibitem{dolev83}
+Danny Dolev and H.~Raymond Strong.
+\newblock Authenticated algorithms for byzantine agreement.
+\newblock {\em SIAM Journal on Computing}, 12(4):656--666, 1983.
+
+\bibitem{dwork88}
+Cynthia Dwork, Nancy Lynch, and Larry Stockmeyer.
+\newblock Consensus in the presence of partial synchrony.
+\newblock {\em Journal of the ACM (JACM)}, 35(2):288--323, 1988.
+
+\bibitem{fischer85}
+Michael~J Fischer, Nancy~A Lynch, and Michael~S Paterson.
+\newblock Impossibility of distributed consensus with one faulty process.
+\newblock {\em Journal of the ACM (JACM)}, 32(2):374--382, 1985.
+
+\bibitem{gafni98}
+Eli Gafni.
+\newblock Round-by-round fault detectors (extended abstract): unifying
+  synchrony and asynchrony.
+\newblock In {\em Proceedings of the seventeenth annual ACM symposium on
+  Principles of distributed computing}, pages 143--152. ACM, 1998.
+
+\bibitem{hendriks05}
+Martijn Hendriks.
+\newblock Model checking the time to reach agreement.
+\newblock In {\em Formal Modeling and Analysis of Timed Systems}, pages
+  98--111. Springer, 2005.
+
+\bibitem{kwiatkowska01}
+Marta Kwiatkowska, Gethin Norman, and Roberto Segala.
+\newblock Automated verification of a randomized distributed consensus protocol
+  using cadence smv and prism?
+\newblock In {\em Computer Aided Verification}, pages 194--206. Springer, 2001.
+
+\bibitem{lamport98}
+Leslie Lamport.
+\newblock The part-time parliament.
+\newblock {\em ACM Transactions on Computer Systems (TOCS)}, 16(2):133--169,
+  1998.
+
+\bibitem{nestmann03}
+Uwe Nestmann, Rachele Fuzzati, and Massimo Merro.
+\newblock Modeling consensus in a process calculus.
+\newblock In {\em CONCUR 2003-Concurrency Theory}, pages 399--414. Springer,
+  2003.
+
+\bibitem{pogosyants00}
+Anna Pogosyants, Roberto Segala, and Nancy Lynch.
+\newblock Verification of the randomized consensus algorithm of aspnes and
+  herlihy: a case study.
+\newblock {\em Distributed Computing}, 13(3):155--186, 2000.
+
+\bibitem{santoro89}
+Nicola Santoro and Peter Widmayer.
+\newblock Time is not a healer.
+\newblock In {\em STACS 89}, pages 304--313. Springer, 1989.
+
+\bibitem{santoro07}
+Nicola Santoro and Peter Widmayer.
+\newblock Agreement in synchronous networks with ubiquitous faults.
+\newblock {\em Theoretical Computer Science}, 384(2):232--249, 2007.
+
+\bibitem{schmid01}
+Ulrich Schmid.
+\newblock How to model link failures: A perception-based fault model.
+\newblock In {\em Dependable Systems and Networks, 2001. DSN 2001.
+  International Conference on}, pages 57--66. IEEE, 2001.
+
+\bibitem{win04}
+Toh~Ne Win, Michael~D Ernst, Stephen~J Garland, Dilsun K{\i}rl{\i}, and Nancy~A
+  Lynch.
+\newblock Using simulated execution in verifying distributed algorithms.
+\newblock {\em International Journal on Software Tools for Technology
+  Transfer}, 6(1):67--76, 2004.
+
+\bibitem{zielinski07}
+Piotr Zielinski.
+\newblock Automatic verification and discovery of byzantine consensus
+  protocols.
+\newblock In {\em Dependable Systems and Networks, 2007. DSN'07. 37th Annual
+  IEEE/IFIP International Conference on}, pages 72--81. IEEE, 2007.
+
+\end{thebibliography}

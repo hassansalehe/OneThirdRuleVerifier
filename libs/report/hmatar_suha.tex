@@ -6,6 +6,7 @@
 \documentclass{llncs}
 %
 \usepackage{makeidx}  % allows for indexgeneration
+\usepackage{amsfonts}
 %
 \begin{document}
 %
@@ -30,7 +31,7 @@
 \authorrunning{Suha Mutluergil Orhun et al.}   % abbreviated author list (for running head)
 %
 %%%% list of authors for the TOC (use if author list has to be modified)
-\tocauthor{Suha Mutluergil Orhun, Hassan Salehe Matar, Oznur Ozkasap}
+\tocauthor{Suha Orhun Mutluergil, Hassan Salehe Matar, Oznur Ozkasap}
 %
 \institute{Koc University - MSRC Lab , Istanbul, TURKEY,\\
 \email{\{smutluergil, hmatar\}@ku.edu.tr},\\ 
@@ -41,26 +42,92 @@ Koc University - NDSL Lab, Istanbul, TURKEY}
 \maketitle              % typeset the title of the contribution
 
 \begin{abstract}
-The abstract should summarize the contents of the paper
-using at least 70 and at most 150 words. It will be set in 9-point
-font size and be inset 1.0 cm from the right and left margins.
-There will be two blank lines before and after the Abstract. \dots
+Consensus problem is a well-known problem in distributed computing setting. It requires that nodes in a distributed platform that communicate via message passing to agree upon a common value in the presence of (benign or malicious) faults. There are algorithms attacking the Consensus problem, however a few of them is proven to be correct. Even a fewer is verified via formal verification tool. If only the benign faults are considered, the \emph{Heard-Of} (HO) model proposes an elegant, simple and unifying formal framework for representing distributed algorithms that are developed for the Consensus problem. In the HO model, algorithms contain communication-closed rounds. Each message belongs to a round and it can be sent or received only in this particular round. Communication faults can be formalized by \emph{communication predicates} and can be integrated into the model directly. In this study, we formalize a well-known Consensus algorithm called \emph{One-Third Rule} (OTR) algorithm with the HO model, implement it in the meta-language \textsc{Promela} and verify it using the model-checking tool \textsc{Spin}.
 \end{abstract}
-%
-\section{Summary}
-%
-With this chapter, the preliminaries are over, and we begin the search
-for periodic solutions to Hamiltonian systems. All this will be done in
-the convex case; that is, we shall study the boundary-value problem
-\begin{eqnarray*}
-  \dot{x}&=&JH' (t,x)\\
-  x(0) &=& x(T)
-\end{eqnarray*}
-with $H(t,\cdot)$ a convex function of $x$, going to $+\infty$ when
-$\left\|x\right\| \to \infty$.
-
 
 \section{Introduction}
+A distributed computing platform consists of separate computing nodes that cooperate to achieve a common goal. In this kind of a setting, the algorithms are desired to be fault-tolerant i.e., they should work properly in case of problems in some nodes or communication channels. Therefore, assumptions on the types of faults on the channels and nodes should be stated clearly while developing an algorithm. 
+
+Particularly, the Consensus problem in a distributed system can formalized as follows: It is assumed that every node in a distributed program initially proposes some value and requires that nodes eventually choose a common value among the proposed ones. The problem can be defined over various distributed settings. However, we can characterize settings around two central ideas: 
+\begin{itemize}
+\item Degree of synchrony among the nodes,
+\item Notion of fault in the system.
+\end{itemize}
+
+We can analyse effects of these two factors on the problem separately. First, we consider effect of synchronization on the Consensus problem. It is shown in \cite{fischer85} that the Consensus problem is unsolvable in fully asynchronous distributed programs if at least one node may fail by a crash. However, the problem is solvable and algorithms exist for synchronous or partly asynchronous distributed programs.
+
+Second, we can assume different kind of faults on a distributed system. We can group them as \emph{malicious} or \emph{benign} faults. Benign faults prevent processes from receiving expected messages, but contents of the messages are not affected. We can count crash failures and some kind of transmission faults (like lost messages) as benign faults. In our study, we assume benign faults since most of the algorithms developed for HO model works correctly in case of benign faults. 
+
+On the other hand, malicious faults model more malfunctioning. A message sent by a process may not arrive to another process or it may arrive with a different content. We can categorize \emph{Byzantine} type of failures as malicious faults. It is harder to solve the Consensus problem assuming malicious faults. However, there are algorithms to solve the problem in partially asynchronous systems in the presence of malicious faults \cite{dwork88}.
+
+Since assumptions on the system has a wide-range, there are abundant number of studies solving the problem in distributed settings which have subtle differences. Therefore, it is easy to make erroneous claims about what algorithms actually achieve and formal statements and proofs about algorithms appear crucial for comparing them. The HO model presented in \cite{charron09} offers an elegant, simple and unifying framework for formalizing the the distributed algorithms in the presence of benign faults. In HO, every algorithm operates in rounds and each round is separated from the other in terms of communication messages. A message created in a round can be sent or received only in this round. Moreover, each round is divided into three stages. At the beginning of a round each process first sends messages to the other process, then waits for messages from the other process and finally performs local computations which changes its local state. In integrate faults on this model, HO model requires \emph{communication predicates}. Communication predicates are logical formulas that restrict behaviour of communication operations. With this round based algorithmic structure and communication variables, we can model a great portion of distributed algorithms for the Consensus problem in presence of benign faults. Moreover, a recent study in \cite{charron11} extends HO model so that it can also model malicious faults in the system. 
+
+For the sake of simplicity, we only consider original HO model and assume only benign faults throughout the paper. Even in this restriction, we can mention plenty of algorithms for the Consensus problem. Among them, we can name Uniform Voting Algorithm \cite{charron09}, DLS Algorithm \cite{dwork88}, Paxos Algorithm \cite{lamport98}, The Last Voting Algorithm \cite{charron09} and One-Third Rule (OTR) Algorithm \cite{charron09}. All of the mentioned algorithms are proven to be correct \cite{debrat12}. However, all of them except OTR Algorithm require a coordinator to work properly. Moreover, OTR does not require invariant communication predicates on HO sets i.e. $\forall r>0 : \mathcal{C}$ holds at $r$ where $r$ is a round number and $\mathcal{C}$ is predicate over HO sets. Apart from that, OTR Algorithm is simple and easier to understand. Each round is identical to the others whereas algorithm's structure changes from round to round in other algorithms. Therefore, we picked OTR as the sample algorithm for our study.
+
+Although HO model provides a nice framework for the problem, it is not obvious how to realize this formal framework and use for automated proofs. In \cite{debrat12}, proof assistant tool \textsc{Isabelle} is used for representing HO models and conducting the proof. However, \textsc{Isabelle} needs an abstract representation of the system in Linear Temporal Logic (LTL) formulae and requires frequent human intervention. Therefore, it is not a fully automated system. 
+
+On the other hand, model-checking tools are widely used for distributed program verification for a long time. They accept programs in a tool specific programming language and they can verify their properties via assertion of some formulae. In this study, we used model-checking tool \textsc{Spin} to implement and verify our HO algorithm OTR. Although model-checking tools exist in a wide spectrum, we preferred the tool \textsc{Spin} for two reasons. First, it is widely used and known to be stable. Second, it supports LTL formulae as verification conditions which are necessary for expressing our verification conditions. 
+
+In the following section, we will elaborate on related studies upon the subject. Then, we will explain HO model in detail including the OTR algorithm in Section 3. Then, we give formal details of \textsc{Spin} in Section 4. After all these basics, we explain our implementation details in Section 5. We give experimental results in Section 6 and make conclusion remarks and mention future studies in Section 7.
+
+\section{Related Work}
+In many agreement problems, round-based message-passing systems are designed \cite{dolev90,dolev83,schmid01} if the system is synchronous. According to \cite{charron09}, first message-passing algorithm for asynchronous system is proposed in \cite{dwork88}. In \cite{gafni98}, round-based model is extended to any type of systems and it is called Round-by-Round Fault Detector (RRFD). In this model, failures are handled by introducing the notion of \emph{faulty component}. This model is not adequate for capturing real faults since only processes are responsible for the failures, never the links. For instance, real cause of the transmission fault which can be sender failure, receiver failure or  channel failure may never be known in RRFD. Moreover, faulty component notion unnecessarily overloads system analysis with non-operational details. Therefore, a new model called \emph{Transmission Faults} model is introduced in \cite{santoro07,santoro89}. In transmission fault model, cause of the problem is not important. A transmission failure may be due to channel, sender or receiver failure but this is not important in the context of transmission faults model. However, transmission faults model is developed for only synchronous systems.
+
+In \cite{charron09}, they propose Heard-Of (HO) model which contains advantages of RRFD and transmission faults model but avoids its drawbacks. In HO model, synchrony degree and failure model is encapsulated in a high-level of abstraction and notion of faulty component is not relevant. It makes HO a desirable model for formal verification and model-checking purposes. In \cite{charron11}, HO model is extended to include systems with malicious faults. Moreover, they prove correctness of HO algorithms in a semi-automated manner using \textsc{Isabelle} in \cite{debrat12}. However, proofs require high-level of mathematical abstraction of HO model and the algorithms and proof idea and direction should be shown to \textsc{Isabelle}. Therefore, it can only be used to check correctness of an existing proof idea.
+
+In order to perform proofs in a fully automated fashion, model-checking tools can be used. Although model checking has been widely practised, a little is done for applying it to verification distributed algorithms for consensus. A plausible reason for this is that these algorithms induce huge, often infinite state spaces, thereby severely limiting the usefulness of model-checking techniques. They also induce unbounded number of rounds which is hard to handle. In \cite{kwiatkowska01}, a shared memory-based randomised consensus algorithm was verified. The authors separated the algorithm into a probabilistic and a non-probabilistic component. They applied standard probabilistic model-checking techniques to the probabilistic component. In the verification of the non-probabilistic part, of which state-space is infinite, they divided problem into small parts and used model-checking for verification. In \cite{zielinski07}, automatic verification is applied to Optimistically Terminating Consensus (OTC) Algorithm (a single-phase, coordinator-based algorithm). The main aim is to automatically discover one phase that can be extended to the full algorithm. Moreover, they do not prove termination condition for the algorithm and coordination selection is not handled. Our study differs from \cite{zielinski07} that we verify entire algorithm with all turns considered and termination property satisfied. In \cite{hendriks05}, a synchronous consensus algorithm is analysed with a real-time model-checker for the case $n=3$, where $n$ is the number of processes. 
+
+Other examples that use formal verification methods other than model-checking can be stated as \cite{win04,nestmann03,pogosyants00}.
+
+\section{the HO model}
+As it is mentioned in the Introduction section, algorithms in HO model contains rounds. Each round is a \emph{communication-closed layer} which means that a message sent can be received only in that round. Each phase contains three stages. First a process sends its messages to the other processes, then it waits for replies from the other processes and lastly it makes a local state transition. Algorithms should contain processes and messages from finite, non-empty sets $\Pi$ and $M$, respectively. In some cases we may need to extend $M$ to $M' = M \cup \{\bot\}$ where $\bot$ is a place holder indicating that no message has arrived, to be able to represent message content of a process.
+
+With this rough description in mind, we can describe algorithms in HO model more formally in the following part.
+
+\subsection{Definitions}
+An HO model machine can be described as a duple $\mathcal{M} = (\mathcal{A}, \mathcal{P})$ where $\mathcal{A}$ is an algorithm and $\mathcal{P}$ is a communication predicate. We will describe structure of an algorithm and a communication predicate in more detail in the following.
+
+An algorithm consists of process specifications. For each $p \in \Pi$, there is an associated \emph{process specification} tuple $Proc_p = (States_p, Init_p, S_p, T_p)$ where
+\begin{itemize}
+\item $States_p$ is a set of possible states (which will be explained more precisely later on) $p$ can take,
+\item $Init_p \subseteq States_p$ is a non empty set representing \emph{initial states} $p$ can be on,
+\item $S_p : States_p \times \Pi \rightarrow M$ is the message sending function of $p$,
+\item $T_p: States_p \times M'^\Pi \rightarrow States_p$ is the next-state function of $p$.
+\end{itemize}
+
+Only vague term above is the $States_p$ field of the process specification. Basically, we can think of a process state as a function that maps local variables of $p$ to values from an appropriate range. Each process has fixed variables $x_p$, $decide_p$ and $HOSet_p$. $x_p$ represents current choice of $p$ on the consensus object at a given round. $decide_p$ holds the value of the consensus object when $p$ decides on it. Before that $decide_p$ is null. $HOSet_p \subseteq \Pi$ is a set of processes that $p$ receives from other processes in a given round.
+
+After formalizing an algorithm $\mathcal{A}$, we can describe the communication predicate $\mathcal{P}$. Communication predicates are defined over a notion called \emph{heard-of collection} which is the collection of subsets of $\Pi$ indexed by $\Pi \times \mathbb{N^+}$. We represent heard-of collections as $(HO(p,r))_{p\in \Pi, r>0}$ where $r$ denotes the round number. Then, $\mathcal{P}$ is a boolean function over heard-of collections i.e., 
+$$ \mathcal{P} : (2^\Pi)^{\Pi \times \mathbb{N^+}} \rightarrow \{false,true\}.$$
+For HO model, we need to put some restrictions on $\mathcal{P}$. We use predicates whose truth value is invariant under time translation. Formally, $\mathcal{P}$ has same truth value for all $(HO(p,r+i))_{p\in \Pi, r>0}$ where $i$ is any element of $\mathbb{N^+}$.
+
+Let $\mathcal{C}$ be some condition over heard-of sets in a given round. We say that $$\mathcal{P}_{(\mathcal{C})^\infty} :: \forall r>0, \exists r_0>r : \mathcal{C} \; holds \; at \; r_0$$
+is also time invariant since it expresses that $\mathcal{C}$ holds infinitely often.
+
+A useful concept that frequently occurs in predicates is the \emph{kernel}. For a process $p$ in a round $r$, we define kernel as $$K(r) = \bigcap_{p\in \Pi} HO(p,r) .$$
+Similarly, we define global kernel of a computation as:$$ K = \bigcap_{r>0}K(r).$$
+A round is said to be \emph{nek} (non-empty kernel) if $K(r) \neq \emptyset$.
+
+We may use more concepts that rely on intersection of heard-of sets of processes in rounds, in communication predicates. Two important concepts are \emph{uniform} and \emph{split} rounds. Round $r$ is split when there exists two processes $p,q \in \Pi$ such that $HO(p,r) \cap HO(q,r) ) \emptyset$ and is uniform when for any two processes $p,q \in \Pi$, $HO(p,r) = HO(q,r)$.
+
+
+
+\subsection{Executions of HO Machines}
+As we defined an HO machine formally in the previous part, now we explain its executions and operational semantics.
+
+Each process of an HO algorithm produces executions consisting of an infinite sequence of rounds. At any round $r$, first $p \in \Pi$ sends a message to all processes according to $S_p$. Then, it waits for a fixed amount of time for messages from other processes i.e., it updates $HOSet_p$ without violating $\mathcal{P}$. Last, It performs a state transition according to $T_p$ function. Considering this structure, we can define two execution models:
+\begin{itemize}
+\item \emph{Fine-grained executions:} We consider each of three stages as \emph{atomic actions} that may change state of process $p$ and channels incident to $p$. Then, an \emph{event} is execution of a single action by a process. In this execution model, configuration $\sigma'$ is a successor configuration of $\sigma$ if there exists an event such that this event transforms state of a process and channels incident to it in $\sigma$ to state of these process and channels in $\sigma'$. Then, a \emph{fine-grained execution} is defined as a sequence of configurations $\sigma_0,\sigma_1,...$ such that $\sigma_0$ is an initial configuration and for all $i\in N^+$ $\sigma_{i+1}$ is a successor configuration of $\sigma_i$. 
+\item \emph{Coarse-grained executions:} Definition of a coarse-grained execution is the same as fine-grained execution except the notion of atomic actions. In coarse-grained executions each round is considered as a single atomic action i.e., a process $p\in \Pi$ changes state according to $T_p$ and messages $p$ receives from other processes in $\Pi$. Moreover, channels are assumed to be empty in this execution model.
+\end{itemize}
+Coarse-grained model have few advantages upon fine-grained model. First, coarse-grained model is simpler and has smaller state space. Second, in coarse-grained model, we do not need to represent state of channels in executions since they are always assumed to be empty.
+Since coarse-grained model presents advantage of representing each round as an atomic action, we want to use it instead of fine-grained model. In fact, we are allowed for such a choice since Theorem 1 in \cite{charron11}, for each fine-grained execution $\eta$ of an HO algorithm , there exists a coarse-grained execution $\zeta$ such that $\eta \approx \zeta$, where $\approx$ represents \emph{stuttering equivalence}, and vice-versa.
+
+\subsection{One-Third Rule (OTR) Algorithm}
+
+\section{SPIN}
+
+
 
 \section{Discussion}
 \section{Results}
@@ -432,39 +499,40 @@ Sect.~5.2 of this article.
 %
 % ---- Bibliography ----
 %
-\begin{thebibliography}{5}
+%\begin{thebibliography}{5}
 %
-\bibitem {clar:eke}
-Clarke, F., Ekeland, I.:
-Nonlinear oscillations and
-boundary-value problems for Hamiltonian systems.
-Arch. Rat. Mech. Anal. 78, 315--333 (1982)
-
-\bibitem {clar:eke:2}
-Clarke, F., Ekeland, I.:
-Solutions p\'{e}riodiques, du
-p\'{e}riode donn\'{e}e, des \'{e}quations hamiltoniennes.
-Note CRAS Paris 287, 1013--1015 (1978)
-
-\bibitem {mich:tar}
-Michalek, R., Tarantello, G.:
-Subharmonic solutions with prescribed minimal
-period for nonautonomous Hamiltonian systems.
-J. Diff. Eq. 72, 28--55 (1988)
-
-\bibitem {tar}
-Tarantello, G.:
-Subharmonic solutions for Hamiltonian
-systems via a $\bbbz_{p}$ pseudoindex theory.
-Annali di Matematica Pura (to appear)
-
-\bibitem {rab}
-Rabinowitz, P.:
-On subharmonic solutions of a Hamiltonian system.
-Comm. Pure Appl. Math. 33, 609--633 (1980)
-
-\end{thebibliography}
-
+%\bibitem {clar:eke}
+%Clarke, F., Ekeland, I.:
+%Nonlinear oscillations and
+%boundary-value problems for Hamiltonian systems.
+%Arch. Rat. Mech. Anal. 78, 315--333 (1982)
+%
+%\bibitem {clar:eke:2}
+%Clarke, F., Ekeland, I.:
+%Solutions p\'{e}riodiques, du
+%p\'{e}riode donn\'{e}e, des \'{e}quations hamiltoniennes.
+%Note CRAS Paris 287, 1013--1015 (1978)
+%
+%\bibitem {mich:tar}
+%Michalek, R., Tarantello, G.:
+%Subharmonic solutions with prescribed minimal
+%period for nonautonomous Hamiltonian systems.
+%J. Diff. Eq. 72, 28--55 (1988)
+%
+%\bibitem {tar}
+%Tarantello, G.:
+%Subharmonic solutions for Hamiltonian
+%systems via a $\bbbz_{p}$ pseudoindex theory.
+%Annali di Matematica Pura (to appear)
+%
+%\bibitem {rab}
+%Rabinowitz, P.:
+%On subharmonic solutions of a Hamiltonian system.
+%Comm. Pure Appl. Math. 33, 609--633 (1980)
+%
+%\end{thebibliography}
+\bibliographystyle{plain}
+\bibliography{refs}
 
 \addtocmark[2]{Subject Index} % additional numbered TOC entry
 \markboth{Subject Index}{Subject Index}
